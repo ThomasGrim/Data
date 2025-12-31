@@ -1,3 +1,4 @@
+```mermaid
 erDiagram
     VENTE_DETAIL {
         VARCHAR ID_BDD PK
@@ -46,3 +47,4 @@ erDiagram
     DIM_CLIENT    ||--o{ VENTE_DETAIL : "CUSTOMER_ID"
     DIM_CALENDRIER||--o{ VENTE_DETAIL : "Date_achat"
     DIM_EMPLOYE   ||--o{ VENTE_DETAIL : "id_employe"
+```
