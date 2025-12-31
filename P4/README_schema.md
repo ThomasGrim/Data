@@ -1,6 +1,6 @@
 # Schéma relationnel (diagramme)
 
-Ce fichier contient le diagramme Mermaid (erDiagram) du schéma relationnel. GitHub affiche les diagrammes Mermaid dans les fichiers Markdown, et tu peux aussi le prévisualiser localement avec une extension VS Code ou exporter en image avec mermaid-cli.
+
 
 ```mermaid
 erDiagram
