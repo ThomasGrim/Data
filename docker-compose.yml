@@ -1,0 +1,91 @@
+# Note: La version n'est plus nécessaire dans Docker Compose v2+
+# Elle est conservée pour compatibilité avec les anciennes versions
+
+services:
+  # Service MongoDB - Base de données NoSQL
+  mongodb:
+    image: mongo:7.0
+    container_name: mongodb-healthcare
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+    volumes:
+      # Volume nommé pour persister les données MongoDB
+      - mongodb_data:/data/db
+      # Volume nommé pour la configuration MongoDB
+      - mongodb_config:/data/configdb
+    networks:
+      - healthcare-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Service de migration - Exécute la migration CSV vers MongoDB
+  migration:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: migration-service
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      MONGO_HOST: mongodb
+      MONGO_PORT: 27017
+      MONGO_USERNAME: admin
+      MONGO_PASSWORD: admin123
+    volumes:
+      # Volume bind mount pour accéder aux fichiers CSV locaux
+      - ./csv:/data/csv:ro
+      # Volume bind mount pour les scripts Python (développement)
+      - .:/app
+    networks:
+      - healthcare-network
+    # Ne pas démarrer automatiquement - exécuter manuellement avec docker-compose run
+    profiles:
+      - migration
+    command: python migrate_to_mongodb.py
+
+  # Service de test - Exécute les tests d'intégrité
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: test-service
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      MONGO_HOST: mongodb
+      MONGO_PORT: 27017
+      MONGO_USERNAME: admin
+      MONGO_PASSWORD: admin123
+    volumes:
+      - ./csv:/data/csv:ro
+      - .:/app
+    networks:
+      - healthcare-network
+    profiles:
+      - test
+    command: python test_data_integrity.py
+
+# Volumes nommés pour la persistance des données
+volumes:
+  # Volume pour les données MongoDB (persiste même si le conteneur est supprimé)
+  mongodb_data:
+    driver: local
+  # Volume pour la configuration MongoDB
+  mongodb_config:
+    driver: local
+  # Note: Le volume CSV utilise un bind mount (./csv) pour accéder aux fichiers locaux
+
+# Réseau pour la communication entre conteneurs
+networks:
+  healthcare-network:
+    driver: bridge
+
