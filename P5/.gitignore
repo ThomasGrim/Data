@@ -1,0 +1,47 @@
+# Fichiers d'état de batch processing
+batch_state_*.json
+
+# Fichiers Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Environnements virtuels
+venv/
+env/
+ENV/
+
+# Fichiers d'export
+exported_data.json
+*.json.bak
+
+# Fichiers de log
+*.log
+
+# Fichiers temporaires
+*.tmp
+*.temp
+
+# Fichiers de couverture de tests
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# Fichiers pytest
+.pytest_cache/
+.tox/
+
+# Fichiers IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Fichiers OS
+.DS_Store
+Thumbs.db
